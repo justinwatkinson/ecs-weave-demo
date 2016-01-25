@@ -1,6 +1,12 @@
 # ecs-weave-demo
 A demo environment using Ansible to deploy an Amazon ECS Cluster using a Weave Overlay Network
 
+# Credit where credit is due
+Lots of help/ideas from here:
+
+- Docker install.sh:  https://get.docker.com/
+- Weave script:  https://github.com/weaveworks/weave
+
 # Disclaimer
 This is just some random hacking and was meant for me to learn Ansible in the context of a project.  I make no guarantees for it's effectivenss in your environment, and you'll likely need to make changes yourself.
 

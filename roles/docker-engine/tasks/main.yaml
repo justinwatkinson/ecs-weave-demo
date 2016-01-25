@@ -1,0 +1,16 @@
+---
+- name: Get Docker-Engine Version
+  shell: "docker -v || echo 'No version detected'" #ensure there's something in stdout so that next step doesn't fail!
+  register: installed_docker_version
+  changed_when: false #Since this is just info gathering, no need to report the change
+  ignore_errors: yes
+- name: Copy Docker-Engine shell script
+  copy: src=install.sh dest=/tmp/install.sh owner={{user}} group={{user}} mode=0755
+  when: installed_docker_version.stdout.find('{{docker_engine_version}}') < 0
+- name: Install Docker Engine
+  shell: /tmp/install.sh {{apt_repo_docker_version}}
+  when: installed_docker_version.stdout.find('{{docker_engine_version}}') < 0
+- name: Modify groups to add user to docker group (prevents need to use sudo on everything)
+  user: "name={{user}} group={{user}} groups={{docker_group}} append=yes"
+- name: Ensure Docker Service is started
+  service: name=docker state=started

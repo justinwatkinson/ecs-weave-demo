@@ -1,2 +1,21 @@
 # ecs-weave-demo
 A demo environment using Ansible to deploy an Amazon ECS Cluster using a Weave Overlay Network
+
+# Disclaimer
+This is just some random hacking and was meant for me to learn Ansible in the context of a project.  I make no guarantees for it's effectivenss in your environment, and you'll likely need to make changes yourself.
+
+# Usage
+## ECS with Weave
+```
+sudo ansible-playbook -i inventory.py ecs-ubuntu-weave.yaml --private-key ~/ec2-keypair.pem
+```
+## ECS only
+```
+sudo ansible-playbook -i inventory.py ecs-ubuntu.yaml --private-key ~/ec2-keypair.pem
+```
+# Assumptions
+- The inventory.py assumes that the EC2 instances are tagged with the key of "role" and the value of "ecs-cluster".  You can change this to suit your needs, as the output is just the ipv4 addresses.
+- The docker install.sh file is slightly modified to pass in the correct parameter for the version and be consumed from the install.sh.  I've had some success rolling back to 1.8 using this technique.  It's a little strange since the package repos don't necessarily handle everything top-to-bottom (as of this writing).
+
+# Required Software
+- boto3 (python) on ansible host

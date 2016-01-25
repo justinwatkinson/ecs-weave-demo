@@ -1,0 +1,17 @@
+---
+- hosts: ecs-hosts
+  roles:
+    - docker-engine
+    - docker-compose
+    - ecs-agent
+  remote_user: ubuntu
+  sudo: yes
+  vars:
+    docker_engine_version: '1.9.1'
+    apt_repo_docker_version: '1.9.1-0~trusty' #Leave this empty if you want to just get the default/latest.  Generally this works best to upgrade only - has trouble with some downgrades
+    docker_compose_version: '1.5.2'
+    user: "ubuntu"
+    docker_group: "docker"
+    ecs_cluster_name: "MyCluster"
+    ecs_agent_container: "amazon/amazon-ecs-agent:latest"
+    docker_socket: "/var/run/docker.sock"

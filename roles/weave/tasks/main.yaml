@@ -1,0 +1,31 @@
+---
+- name: Copy Weave shell script
+  copy: src=weave dest=/usr/bin/weave owner={{user}} group={{user}} mode=0755
+- name: Copy Weave peer python script
+  copy: src=ecs-peers.py dest=/usr/bin/ecs-peers owner={{user}} group={{user}} mode=0755
+- name: Configure Docker DNS Settings for Weave Overlay Network
+  lineinfile: "dest=/etc/default/docker regexp='DOCKER_OPTS=\\\"\\$DOCKER_OPTS --dns {{ ansible_docker0.ipv4.address }} --dns-search={{ weave_dns_domain }}\\\"' backup=true line='DOCKER_OPTS=\"$DOCKER_OPTS --dns {{ ansible_docker0.ipv4.address }} --dns-search={{ weave_dns_domain }}\"'"
+  register: docker_weave_dns_status
+- name: Restart Docker #Cannnot use a handler since it needs to happen immediately after this
+  service: name=docker state=restarted
+  when: docker_weave_dns_status|changed
+- name: Check weave status
+  shell: "weave status"
+  register: weave_status
+  changed_when: false #Since this is just info gathering, no need to report the change
+  ignore_errors: yes
+- name: Find ECS Peer IPs
+  shell: "ecs-peers"
+  register: ecs_peer_ips
+  changed_when: false #Since this is just info gathering, no need to report the change
+  when: "weave_status.stdout.find('Service: dns') < 1"
+- name: Start Weave Router
+  shell: /usr/bin/weave launch-router --dns-domain={{ weave_dns_domain }} {{ item }}
+  when: "weave_status.stdout.find('Service: dns') < 1"
+  with_items: ecs_peer_ips.stdout_lines
+- name: Start Weave Proxy
+  shell: /usr/bin/weave launch-proxy --hostname-from-label 'com.amazonaws.ecs.container-name'
+  when: "weave_status.stdout.find('Service: proxy') < 1"
+- name: Start Weave Plugin
+  shell: /usr/bin/weave launch-plugin
+  when: "weave_status.stdout.find('Service: plugin') < 1"

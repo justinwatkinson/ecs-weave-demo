@@ -1,0 +1,7 @@
+---
+- name: Install python-pip
+  apt: pkg=python-pip state=latest update_cache=yes cache_valid_time=3600
+- name: Install aws-sdk for python (boto3)
+  pip: name=boto3
+- name: Install aws-sdk for CLI
+  pip: name=awscli

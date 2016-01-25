@@ -16,6 +16,7 @@ sudo ansible-playbook -i inventory.py ecs-ubuntu.yaml --private-key ~/ec2-keypai
 # Assumptions
 - The inventory.py assumes that the EC2 instances are tagged with the key of "role" and the value of "ecs-cluster".  You can change this to suit your needs, as the output is just the ipv4 addresses.
 - The docker install.sh file is slightly modified to pass in the correct parameter for the version and be consumed from the install.sh.  I've had some success rolling back to 1.8 using this technique.  It's a little strange since the package repos don't necessarily handle everything top-to-bottom (as of this writing).
+- The IAM role of the EC2 instance needs to have enough permissions to run the ecs-peers.py in the weave role.  Looks like describe_tags and describe_instances at a minimum.
 
 # Required Software
 - boto3 (python) on ansible host

@@ -21,7 +21,8 @@ if __name__ == '__main__':
     dns_names = []
     for instance_list in result['Reservations']:
         for instance in instance_list['Instances']:
-            dns_names.append(instance['PublicDnsName'])
+            if instance['State']['Name'] == 'running': #exclude terminated/stopped instances
+                dns_names.append(instance['PublicDnsName'])
 
     #output as formatted json string for Ansible
     output_dict = {"ecs-hosts": {"hosts": dns_names}}

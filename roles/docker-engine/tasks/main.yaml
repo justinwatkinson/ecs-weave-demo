@@ -14,3 +14,7 @@
   user: "name={{user}} group={{user}} groups={{docker_group}} append=yes"
 - name: Ensure Docker Service is started
   service: name=docker state=started
+
+#required since initial gather facts does not know about docker0 interface
+- name: Gathering facts
+  setup:
